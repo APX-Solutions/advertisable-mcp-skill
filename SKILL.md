@@ -97,6 +97,7 @@ Advertisable currently exposes this video-ad toolchain:
 ```text
 ping
 list_brands
+list_products
 create_video_ad
 get_ad_status
 list_recent_ads

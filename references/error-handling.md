@@ -36,20 +36,22 @@ Actions:
 2. Normalize the token so there is exactly one `Bearer ` prefix.
 3. Avoid printing the token while debugging.
 
-## Brand Resolution
+## Brand Or Product Resolution
 
 Likely causes:
 
 - `list_brands` returned no brands.
 - The user's brand wording matches multiple brands.
+- `list_products` returned no products for the selected brand.
+- The user named a product that is not in the returned product list.
 
 Actions:
 
 1. If there are no brands, tell the user their account has no available brands.
 2. If multiple brands match, show concise options and ask the user to choose.
-3. Never invent `brand_id`.
-4. If the user asks for product selection, explain that product listing is not available through the current MCP tools yet. Ask them to describe the product for the prompt, or provide a known `product_id` if they already have one.
-5. Never invent `product_id`.
+3. If there are no products, offer to generate without product context and explain visuals may be less consistent.
+4. If the product is not found, show available products instead of guessing.
+5. Never invent `brand_id` or `product_id`.
 
 ## Generation Jobs
 

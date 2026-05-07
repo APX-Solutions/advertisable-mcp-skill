@@ -15,7 +15,7 @@ Never include the API key in MCP tool arguments unless a live tool schema explic
 Use this common sequence for new video ads:
 
 ```text
-list_brands -> confirm -> create_video_ad -> get_ad_status
+list_brands -> list_products -> confirm -> create_video_ad -> get_ad_status
 ```
 
 Use this sequence for variations:
@@ -86,6 +86,47 @@ Output interpretation:
 - If multiple brands could match, show the options and ask the user to choose.
 - Do not invent brand IDs.
 
+## list_products
+
+Purpose: Lists all products for a brand.
+
+Use when:
+
+- The user wants an ad for a specific product.
+- You have resolved `brand_id` and need product context before creating an ad.
+- The user asks what products are available for a brand.
+
+Do not use when:
+
+- The task is only to list recent ads or check status for a known job.
+- The user explicitly wants generic brand creative without a product.
+
+Input schema:
+
+```json
+{
+  "properties": {
+    "brand_id": {
+      "title": "Brand Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "brand_id"
+  ],
+  "title": "list_productsArguments",
+  "type": "object"
+}
+```
+
+Output interpretation:
+
+- Returned products include `product_id`, `name`, `description`, and `product_page_url`.
+- If the brand has no products, tell the user and offer to generate without product context.
+- If the user names a product that does not appear, surface available products instead of guessing.
+- Use a `product_id` in `create_video_ad` whenever a matching product exists.
+- Do not invent product IDs.
+
 ## create_video_ad
 
 Purpose: Generate an AI video advertisement from a text description.
@@ -93,24 +134,25 @@ Purpose: Generate an AI video advertisement from a text description.
 Use when:
 
 - The user wants a new AI video ad, product promo, social ad, creative concept, commercial, or storyboarded video.
-- Brand context has been resolved and the prompt contains the user's product or creative details.
+- Brand and product context have been resolved, or the user explicitly agrees to generate without product context.
 
 Required confirmation:
 
 - Confirm before calling. This takes 2-4 minutes and costs compute.
-- Confirm brand, prompt, aspect ratio, number of storyboards, and any known `product_id`.
+- Confirm brand, product or no-product choice, prompt, aspect ratio, and number of storyboards.
 
 Do not use when:
 
 - The user is only asking to check an existing job.
 - The brand is ambiguous.
+- The product is ambiguous and products are available.
 - The user has not consented after the compute-cost warning.
 
 Recommended preflight:
 
 1. `list_brands` to resolve `brand_id`.
-2. Ask one concise clarification if the brand or creative direction is ambiguous.
-3. If the user supplies a known `product_id`, include it; otherwise put product details in the prompt.
+2. `list_products` to resolve `product_id`.
+3. Ask one concise clarification if brand/product is ambiguous.
 4. Confirm the final generation parameters.
 
 Input schema:
@@ -162,7 +204,7 @@ Parameter guidance:
 
 - `brand_id`: required. Get from `list_brands`.
 - `prompt`: required. Write a clear creative brief from the user's words.
-- `product_id`: optional. Use only when the user or another trusted source provides a known product ID. Do not invent one.
+- `product_id`: optional but strongly recommended. Get from `list_products` when a matching product exists.
 - `num_storyboards`: 1-5. Default to 1 unless the user asks for variants.
 - `aspect_ratio`: `"9:16"` default for social ads. Valid documented values: `"9:16"`, `"16:9"`, `"1:1"`.
 
