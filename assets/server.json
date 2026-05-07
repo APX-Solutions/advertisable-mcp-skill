@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "advertisable",
+  "description": "Remote Advertisable MCP server for connecting agents to Advertisable workflows and tools.",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/advertisable/advertisable-mcp-skill",
+    "source": "other"
+  },
+  "version_detail": {
+    "version": "0.1.0"
+  },
+  "packages": [
+    {
+      "registry_type": "remote",
+      "identifier": "advertisable",
+      "version": "0.1.0",
+      "transport": {
+        "type": "streamable-http",
+        "url": "https://api-adbot.advertisable.ai/mcp/",
+        "headers": [
+          {
+            "name": "Authorization",
+            "description": "Bearer token in the form: Bearer <token>",
+            "isRequired": true,
+            "isSecret": true
+          }
+        ]
+      }
+    }
+  ]
+}

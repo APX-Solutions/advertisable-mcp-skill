@@ -1,0 +1,4 @@
+interface:
+  display_name: "Advertisable MCP"
+  short_description: "Install, reload, verify, and use the Advertisable remote MCP server."
+  default_prompt: "Use the Advertisable MCP skill to install the remote MCP connection with my preferred API key handling mode, remind me about any gateway restart, and then help me use the available Advertisable tools."
