@@ -1,6 +1,6 @@
 ---
 name: advertisable-mcp
-description: Install, configure, restart, verify, and use the Advertisable remote MCP server at https://api-adbot.advertisable.ai/mcp/ across MCP-capable agent clients. Use when a user asks to connect Advertisable to an agent, configure an Advertisable API key or bearer token, choose private versus agent-assisted MCP setup, install the MCP connection in OpenClaw or another gateway-style client, troubleshoot missing Advertisable MCP tools, or learn how to use the Advertisable MCP tools after they are mounted.
+description: Install, configure, and use the Advertisable MCP tools for video ad creation and management. Trigger on ANY of the following: listing brands, listing products, creating a video ad, checking ad job status, regenerating ad variations, or any mention of Advertisable, video ads, ad generation, or ad jobs. Also trigger for install, configure, restart, verify, and troubleshoot flows involving the Advertisable MCP server, API key, or bearer token across any MCP-capable agent client.
 homepage: https://advertisable.ai
 repository: https://github.com/advertisable/advertisable-mcp-skill
 issues: https://github.com/advertisable/advertisable-mcp-skill/issues
