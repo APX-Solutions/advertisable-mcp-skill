@@ -125,6 +125,7 @@ Output interpretation:
 - If the brand has no products, tell the user and offer to generate without product context.
 - If the user names a product that does not appear, surface available products instead of guessing.
 - Use a `product_id` in `create_video_ad` whenever a matching product exists.
+- If the product payload is large, immediately copy only the selected brand/product fields into `.advertisable-selection.json` as described in `references/video-ad-workflows.md`.
 - Do not invent product IDs.
 
 ## create_video_ad
@@ -152,8 +153,9 @@ Recommended preflight:
 
 1. `list_brands` to resolve `brand_id`.
 2. `list_products` to resolve `product_id`.
-3. Ask one concise clarification if brand/product is ambiguous.
-4. Confirm the final generation parameters.
+3. Write `.advertisable-selection.json` with the compact selected brand/product context if filesystem access is available.
+4. Ask one concise clarification if brand/product is ambiguous.
+5. Confirm the final generation parameters.
 
 Input schema:
 
@@ -213,6 +215,7 @@ Output interpretation:
 - Returns immediately with a `job_id`.
 - Generation usually takes 2-4 minutes.
 - Use `get_ad_status` to inspect progress and final outputs.
+- After a successful submission returns `job_id`, delete `.advertisable-selection.json` if it was created for this ad flow.
 
 ## get_ad_status
 

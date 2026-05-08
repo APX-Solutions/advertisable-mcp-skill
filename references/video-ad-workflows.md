@@ -26,10 +26,12 @@ Flow:
 6. If products exist but the product is unclear, ask the user to choose.
 7. If the brand has no products, tell the user and offer to continue without product context.
 8. Build a concise prompt from the user's creative direction and product details.
-9. Confirm brand, product or no-product choice, aspect ratio, storyboard count, and prompt before calling `create_video_ad`.
-10. Call `create_video_ad`.
-11. Tell the user generation usually takes 2-4 minutes.
-12. Use `get_ad_status` to check progress when useful.
+9. Write the selected brand/product context to a temporary selection file if filesystem access is available.
+10. Confirm brand, product or no-product choice, aspect ratio, storyboard count, and prompt before calling `create_video_ad`.
+11. Call `create_video_ad`.
+12. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
+13. Tell the user generation usually takes 2-4 minutes.
+14. Use `get_ad_status` to check progress when useful.
 
 Default choices when the user does not specify:
 
@@ -42,6 +44,41 @@ Confirmation template:
 ```text
 I found brand "<brand>" and product "<product>". I'll generate 1 vertical 9:16 video ad with this prompt: "<prompt>". This takes about 2-4 minutes and uses compute. Shall I start?
 ```
+
+## Temporary Selection File
+
+Use this workaround when `list_products` returns a large payload. After selecting the correct product, immediately write a compact working note so the selected `product_id` survives follow-up messages and does not get buried in context.
+
+Preferred filename in the current workspace:
+
+```text
+.advertisable-selection.json
+```
+
+If the current workspace is not writable, use the agent's temporary directory. If filesystem access is unavailable, keep the same JSON object as a short visible working note in the conversation before asking for confirmation.
+
+Write only compact, non-secret context:
+
+```json
+{
+  "brand_id": "<brand uuid>",
+  "brand_name": "<brand name>",
+  "product_id": "<product uuid or null>",
+  "product_name": "<product name or null>",
+  "product_page_url": "<url or null>",
+  "prompt": "<draft prompt>",
+  "aspect_ratio": "9:16",
+  "num_storyboards": 1
+}
+```
+
+Rules:
+
+- Do not write the API key, Authorization header, full `list_products` payload, or unrelated user data.
+- Read this file before calling `create_video_ad` if the conversation has moved on after product selection.
+- Include the selected product name and `product_id` in the confirmation message when useful for accuracy.
+- Delete the file after `create_video_ad` returns a `job_id`.
+- Delete the file if the user cancels, changes brand, changes product, or abandons the ad creation flow.
 
 ## Recent Ads
 
@@ -97,6 +134,8 @@ I'll generate a new variation from job <job_id>, keeping the same character and 
 - Confirm before calling `create_video_ad` or `regenerate_variation`.
 - Do not invent `brand_id`, `product_id`, or `job_id`.
 - Do not guess among multiple plausible brands or products.
+- Preserve selected brand/product IDs in `.advertisable-selection.json` when a large product list makes context loss likely.
+- Delete `.advertisable-selection.json` after submitting the ad or when the user cancels.
 - Do not promise immediate completion; generation usually takes 2-4 minutes.
 - Do not include the API key in tool arguments.
 - Keep user-facing summaries focused on brand, product, prompt, status, and IDs.

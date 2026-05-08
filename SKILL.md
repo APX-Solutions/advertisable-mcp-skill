@@ -104,7 +104,7 @@ list_recent_ads
 regenerate_variation
 ```
 
-Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation.
+Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. When a product is selected from a large `list_products` response, preserve the compact selection in `.advertisable-selection.json` as described in `references/video-ad-workflows.md`, then delete that file after submission or cancellation.
 
 If the user asks to maintain or publish this skill, refresh the tool reference from the live server:
 

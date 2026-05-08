@@ -53,6 +53,22 @@ Actions:
 4. If the product is not found, show available products instead of guessing.
 5. Never invent `brand_id` or `product_id`.
 
+## Lost Product Selection
+
+Likely causes:
+
+- `list_products` returned a large payload and the selected `product_id` was lost in later context.
+- The user resumed the ad creation flow after another topic.
+- The agent selected the right product once but did not preserve a compact working note.
+
+Actions:
+
+1. Check for `.advertisable-selection.json` in the current workspace or the agent's temporary directory.
+2. If present, read `brand_id`, `brand_name`, `product_id`, and `product_name` from that file before calling `create_video_ad`.
+3. If missing, call `list_products` again and recreate the compact selection file after choosing the product.
+4. Delete the selection file after `create_video_ad` returns a `job_id`, or when the user cancels or changes the selected brand/product.
+5. Never store the API key or full product payload in the selection file.
+
 ## Generation Jobs
 
 Likely causes:
