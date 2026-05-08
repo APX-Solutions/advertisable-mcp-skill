@@ -20,10 +20,10 @@ Flow:
 
 1. Call `list_brands`.
 2. Match the user's brand wording to a returned brand.
-3. If there is no clear brand match, show concise options and ask the user to choose.
+3. If there is no clear brand match, show a digestible brand list and ask the user to choose.
 4. Call `list_products` with the chosen `brand_id`.
 5. Match the user's product wording to a returned product.
-6. If products exist but the product is unclear, ask the user to choose.
+6. If products exist but the product is unclear, show a digestible product list and ask the user to choose.
 7. If the brand has no products, tell the user and offer to continue without product context.
 8. Build a concise prompt from the user's creative direction and product details.
 9. Write the selected brand/product context to a temporary selection file if filesystem access is available.
@@ -44,6 +44,44 @@ Confirmation template:
 ```text
 I found brand "<brand>" and product "<product>". I'll generate 1 vertical 9:16 video ad with this prompt: "<prompt>". This takes about 2-4 minutes and uses compute. Shall I start?
 ```
+
+## Digestible Brand/Product Output
+
+When showing brands or products to the user, never paste raw tool payloads, full JSON, or long unfiltered lists. Convert tool output into a short, scannable choice list.
+
+Default format for brand choices:
+
+```text
+I found a few possible brands:
+
+1. Brand Name
+2. Another Brand
+3. Third Brand
+
+Which one should I use?
+```
+
+Default format for product choices:
+
+```text
+I found these matching products:
+
+1. Product Name — short description or URL domain if useful
+2. Another Product — short description or URL domain if useful
+3. Third Product — short description or URL domain if useful
+
+Which product should I use?
+```
+
+Rules:
+
+- Show at most 5 options by default.
+- If there are many results, show the best matches first and say there are more available.
+- Use product names first; include descriptions only when they help distinguish similar products.
+- Hide IDs by default. Include `brand_id`, `product_id`, or `job_id` only when the user asks for technical details or when confirming a precise selection would prevent ambiguity.
+- Do not show the full `product_page_url` unless it helps the user distinguish products; prefer the domain or a short label.
+- If one match is very likely, say which one you selected and ask for confirmation instead of listing many choices.
+- Keep follow-up questions short: ask for brand choice or product choice, not every setting at once.
 
 ## Temporary Selection File
 

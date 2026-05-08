@@ -83,7 +83,8 @@ Output interpretation:
 
 - Match the user's wording to returned brand names.
 - If no brands are returned, tell the user there are no brands available for this account.
-- If multiple brands could match, show the options and ask the user to choose.
+- If multiple brands could match, show a compact numbered list of at most 5 brand names and ask the user to choose.
+- Do not paste raw brand JSON or long unfiltered lists into chat.
 - Do not invent brand IDs.
 
 ## list_products
@@ -123,7 +124,9 @@ Output interpretation:
 
 - Returned products include `product_id`, `name`, `description`, and `product_page_url`.
 - If the brand has no products, tell the user and offer to generate without product context.
-- If the user names a product that does not appear, surface available products instead of guessing.
+- If the user names a product that does not appear, surface a compact list of likely alternatives instead of guessing.
+- Show at most 5 products by default, using product names and short distinguishing details. Do not paste the full product payload into chat.
+- Hide `product_id` by default unless the user asks for technical details or the ID is needed to confirm a precise selection.
 - Use a `product_id` in `create_video_ad` whenever a matching product exists.
 - If the product payload is large, immediately copy only the selected brand/product fields into `.advertisable-selection.json` as described in `references/video-ad-workflows.md`.
 - Do not invent product IDs.

@@ -48,9 +48,9 @@ Likely causes:
 Actions:
 
 1. If there are no brands, tell the user their account has no available brands.
-2. If multiple brands match, show concise options and ask the user to choose.
+2. If multiple brands match, show a compact numbered list of at most 5 brand names and ask the user to choose.
 3. If there are no products, offer to generate without product context and explain visuals may be less consistent.
-4. If the product is not found, show available products instead of guessing.
+4. If the product is not found, show up to 5 likely product alternatives with names and short distinguishing details instead of guessing.
 5. Never invent `brand_id` or `product_id`.
 
 ## Lost Product Selection
