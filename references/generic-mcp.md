@@ -25,6 +25,14 @@ Use this reference for any MCP-capable agent client not covered by a dedicated a
 5. Restart/reload the MCP client if it loads tools at startup.
 6. Confirm the Advertisable tools appear in the live tool list.
 
+For non-technical users, prefer a browser-based private setup if the client adapter provides one. For OpenClaw, use:
+
+```bash
+node scripts/connect-local-ui.js --client openclaw
+```
+
+Give the user the printed localhost link and tell them to paste their Advertisable connection key there, not in chat.
+
 ## Config Snippets
 
 Print a generic snippet:

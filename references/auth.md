@@ -16,7 +16,21 @@ Offer user choice. Prefer privacy, but respect convenience.
 
 Use when the user does not want the agent to see the API key.
 
-Good paths:
+For non-technical users, prefer a local browser setup when the client adapter supports it. The agent runs the setup script, sends the user the printed localhost URL, and the user enters the key in their own browser instead of chat.
+
+OpenClaw browser setup:
+
+```bash
+node scripts/connect-local-ui.js --client openclaw
+```
+
+Tell the user:
+
+```text
+Open this link, paste your Advertisable connection key, and click Connect. When the page says setup is done, come back and tell me.
+```
+
+Fallback paths:
 
 - Ask the user to run a local installer that prompts for the key.
 - Ask the user to set `ADVERTISABLE_API_KEY` in their shell and run the installer.

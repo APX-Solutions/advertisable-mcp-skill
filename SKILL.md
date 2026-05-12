@@ -52,8 +52,8 @@ The skill installs the connection. The MCP server provides the live tools. The r
 
 1. Identify the user's agent client or gateway. If unknown, ask once.
 2. Offer setup modes without pressure:
-   - **Private guided install**: user keeps the API key out of chat via local prompt, environment variable, secret UI, or manual config.
-   - **Agent-assisted install**: user pastes the API key into chat and the agent configures the connection.
+   - **Private guided install**: for non-technical users, run a local browser setup page and send the user the localhost link. The user enters their Advertisable connection key in the browser, not in chat.
+   - **Agent-assisted install**: user pastes the Advertisable connection key into chat and the agent configures the connection.
    - **Manual install**: agent gives commands/config snippets and the user runs them.
 3. Read `references/auth.md` before handling tokens.
 4. Read the relevant client reference:
@@ -117,6 +117,7 @@ Use the live MCP schema as the source of truth if it differs from bundled refere
 ## Bundled Resources
 
 - `scripts/install-openclaw-mcp.js`: Configures the OpenClaw MCP registry entry.
+- `scripts/connect-local-ui.js`: Starts a localhost browser page for private, non-technical OpenClaw setup.
 - `scripts/verify-openclaw-mcp.js`: Checks that OpenClaw has an `advertisable` MCP entry.
 - `scripts/generate-tools-reference.js`: Queries MCP `tools/list` and renders Markdown docs.
 - `scripts/print-mcp-config.js`: Prints generic Advertisable MCP config snippets.

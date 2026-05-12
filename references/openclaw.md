@@ -4,13 +4,33 @@ OpenClaw can register the Advertisable remote MCP server with `openclaw mcp set`
 
 ## Private Guided Install
 
-Run:
+For non-technical users, prefer the local browser setup. The agent should run:
+
+```bash
+node scripts/connect-local-ui.js --client openclaw
+```
+
+The script prints a line like:
+
+```text
+SETUP_URL http://127.0.0.1:48731/
+```
+
+Send that URL to the user and say:
+
+```text
+Open this link, paste your Advertisable connection key, and click Connect. When the page says setup is done, come back and tell me.
+```
+
+The browser page installs the OpenClaw MCP config after the user submits the key. It then tells the user they can close the tab and tell the agent setup is done.
+
+Technical fallback:
 
 ```bash
 node scripts/install-openclaw-mcp.js
 ```
 
-The script prompts for the Advertisable API key and does not print it.
+The script prompts for the Advertisable connection key and does not print it.
 
 Environment-variable setup:
 
