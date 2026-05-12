@@ -2,6 +2,8 @@
 
 Use this reference for any MCP-capable agent client not covered by a dedicated adapter.
 
+On first-time setup, ask the user to choose private browser setup, quick chat setup, or manual setup before asking for any key. Do not ask the user to paste a key into chat unless they choose quick chat setup.
+
 ## Server Definition
 
 ```json

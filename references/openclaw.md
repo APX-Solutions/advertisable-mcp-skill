@@ -2,6 +2,8 @@
 
 OpenClaw can register the Advertisable remote MCP server with `openclaw mcp set`.
 
+On first-time setup, ask the user to choose private browser setup, quick chat setup, or manual setup before asking for any key. Do not ask the user to paste a key into chat unless they choose quick chat setup.
+
 ## Private Guided Install
 
 For non-technical users, prefer the local browser setup. The agent should run:

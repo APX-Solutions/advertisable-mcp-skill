@@ -10,7 +10,19 @@ The MCP client or gateway should attach this header. Do not pass the API key as 
 
 ## Setup Choices
 
-Offer user choice. Prefer privacy, but respect convenience.
+On first-time setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking the user to paste the key into chat.
+
+Use this wording:
+
+```text
+How would you like to connect Advertisable?
+
+1. Private browser setup: I give you a local link where you enter the key. The key is not pasted into chat.
+2. Quick chat setup: you paste the key here and I configure it for you.
+3. Manual setup: I show you the command/config and you run it yourself.
+```
+
+Respect the user's choice.
 
 ### Private guided install
 
@@ -46,7 +58,7 @@ Use when the user explicitly chooses speed and is comfortable sharing the API ke
 Before accepting the key, briefly say:
 
 ```text
-You can paste the API key here and I will configure it, but it may remain visible in this conversation history. For a more private path, I can give you a local prompt or env-var setup instead.
+You can paste the Advertisable connection key here and I will configure it, but it may remain visible in this conversation history. For a more private path, choose the browser setup instead.
 ```
 
 After receiving the key:

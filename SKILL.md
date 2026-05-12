@@ -51,20 +51,31 @@ The skill installs the connection. The MCP server provides the live tools. The r
 ## Install Workflow
 
 1. Identify the user's agent client or gateway. If unknown, ask once.
-2. Offer setup modes without pressure:
-   - **Private guided install**: for non-technical users, run a local browser setup page and send the user the localhost link. The user enters their Advertisable connection key in the browser, not in chat.
-   - **Agent-assisted install**: user pastes the Advertisable connection key into chat and the agent configures the connection.
-   - **Manual install**: agent gives commands/config snippets and the user runs them.
-3. Read `references/auth.md` before handling tokens.
-4. Read the relevant client reference:
+2. On first-time setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking for the key in chat.
+3. Offer exactly these setup modes in plain language:
+   - **Private browser setup**: the agent starts a local setup page and sends the user a localhost link. The user enters their Advertisable connection key in the browser, not in chat.
+   - **Quick chat setup**: the user pastes the Advertisable connection key into chat and the agent configures the connection.
+   - **Manual setup**: the agent gives commands/config snippets and the user runs them.
+4. Use this wording:
+
+```text
+How would you like to connect Advertisable?
+
+1. Private browser setup: I give you a local link where you enter the key. The key is not pasted into chat.
+2. Quick chat setup: you paste the key here and I configure it for you.
+3. Manual setup: I show you the command/config and you run it yourself.
+```
+
+5. Read `references/auth.md` before handling tokens.
+6. Read the relevant client reference:
    - OpenClaw: `references/openclaw.md`
    - Hermes: `references/hermes.md`
    - NemoClaw: `references/nemoclaw.md`
    - Other clients: `references/generic-mcp.md`
-5. Configure the MCP server.
-6. Tell the user to restart the gateway or begin a fresh agent session. This is required or commonly needed for gateway-style clients such as OpenClaw, Hermes, and NemoClaw.
-7. Verify the MCP entry when the client exposes a verification command.
-8. If tools are missing after setup, read `references/error-handling.md` before changing the token or config.
+7. Configure the MCP server using the selected setup path.
+8. Tell the user to restart the gateway or begin a fresh agent session. This is required or commonly needed for gateway-style clients such as OpenClaw, Hermes, and NemoClaw.
+9. Verify the MCP entry when the client exposes a verification command.
+10. If tools are missing after setup, read `references/error-handling.md` before changing the token or config.
 
 ## OpenClaw Quick Path
 
