@@ -190,11 +190,12 @@ Recommended preflight:
 
 1. `list_brands` to resolve `brand_id`.
 2. `list_products` to resolve `product_id`.
-3. Immediately write a session-scoped temp selection file with the compact selected brand/product context.
-4. Call `get_wallet_balance` to confirm the wallet is active and surface available balance.
-5. Ask one concise clarification if brand/product is ambiguous.
-6. Confirm the final generation parameters and compute use.
-7. Immediately before calling `create_video_ad`, read the temp selection file back and use the `product_id` from the file.
+3. Immediately write a session-scoped temp selection file with the compact selected brand/product context before asking follow-up creative questions. Prompt/settings may be `null` at this point.
+4. Ask one concise clarification if brand/product is ambiguous.
+5. Build or refine the prompt and update prompt/settings in the temp selection file.
+6. Call `get_wallet_balance` to confirm the wallet is active and surface available balance.
+7. Confirm the final generation parameters and compute use.
+8. Immediately before calling `create_video_ad`, read the temp selection file back and use the `product_id` from the file.
 
 Do not call `create_video_ad` from memory after selecting a product from `list_products`. Plain rule: never create a video ad from remembered product IDs. If the temp selection file is missing or expired, call `list_products` again and recreate it.
 

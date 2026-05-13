@@ -68,10 +68,12 @@ When using `list_products`, do not rely on conversation memory for the selected 
 After selecting a product from `list_products`, immediately:
 
 1. Save a compact temp selection file with `brand_id`, `brand_name`, `product_id`, `product_name`, and `expires_at`.
-2. Tell the user which product was selected in plain language.
-3. Before calling `create_video_ad`, read the temp selection file back.
-4. Use the `product_id` from the temp selection file, not from memory.
-5. Delete the temp selection file after `create_video_ad` returns a `job_id`, or if the user cancels or changes product.
+2. Do this before asking follow-up creative questions about the ad. Prompt/settings may be `null` at first.
+3. Tell the user which product was selected in plain language.
+4. Update prompt/settings in the temp file later if the ad creative changes before generation.
+5. Before calling `create_video_ad`, read the temp selection file back.
+6. Use the `product_id` from the temp selection file, not from memory.
+7. Delete the temp selection file after `create_video_ad` returns a `job_id`, or if the user cancels or changes product.
 
 Do not call `create_video_ad` from memory after a `list_products` response. Plain rule: never create a video ad from remembered product IDs. If no temp selection file exists, call `list_products` again and repeat the selection protocol.
 

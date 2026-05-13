@@ -25,16 +25,17 @@ Flow:
 4. Call `list_products` with the chosen `brand_id`.
 5. Match the user's product wording to a returned product.
 6. If products exist but the product is unclear, show a digestible product list and ask the user to choose.
-7. If the brand has no products, tell the user and offer to continue without product context.
-8. Build a concise prompt from the user's creative direction and product details.
-9. Write the selected brand/product context to a temporary selection file. Do this immediately after product selection.
-10. Call `get_wallet_balance` and confirm the wallet is active.
-11. Confirm brand, product or no-product choice, aspect ratio, storyboard count, prompt, estimated generation time, and available balance before calling `create_video_ad`.
-12. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
-13. Call `create_video_ad`.
-14. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
-15. Tell the user generation usually takes 2-4 minutes.
-16. Use `get_ad_status` to check progress when useful.
+7. As soon as the product is selected, write the selected brand/product context to a temporary selection file. Do this before asking follow-up ad creative questions.
+8. If the brand has no products, tell the user and offer to continue without product context.
+9. Build a concise prompt from the user's creative direction and product details.
+10. Update the temporary selection file with the final prompt/settings if they were not known when the product was selected.
+11. Call `get_wallet_balance` and confirm the wallet is active.
+12. Confirm brand, product or no-product choice, aspect ratio, storyboard count, prompt, estimated generation time, and available balance before calling `create_video_ad`.
+13. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
+14. Call `create_video_ad`.
+15. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
+16. Tell the user generation usually takes 2-4 minutes.
+17. Use `get_ad_status` to check progress when useful.
 
 Default choices when the user does not specify:
 
@@ -98,6 +99,8 @@ Use this workaround when `list_products` returns a large payload. After selectin
 
 This is a required protocol whenever a product is selected from `list_products`. Do not call `create_video_ad` from memory after product selection. Plain rule: never create a video ad from remembered product IDs. If the temp selection file is missing, expired, or ambiguous, call `list_products` again and recreate it before generating the ad.
 
+Write the file immediately after product selection, before asking additional creative questions about the ad. It is fine for prompt/settings fields to be `null` at first; update them later after the user answers follow-up questions.
+
 Prefer a temp-directory file, not a workspace file, so it does not linger in the user's project.
 
 Windows pattern:
@@ -124,9 +127,9 @@ Write only compact, non-secret context:
   "product_id": "<product uuid or null>",
   "product_name": "<product name or null>",
   "product_page_url": "<url or null>",
-  "prompt": "<draft prompt>",
-  "aspect_ratio": "9:16",
-  "num_storyboards": 1,
+  "prompt": null,
+  "aspect_ratio": null,
+  "num_storyboards": null,
   "created_at": "2026-05-13T10:00:00Z",
   "expires_at": "2026-05-13T12:00:00Z"
 }
@@ -136,6 +139,8 @@ Rules:
 
 - Do not write the API key, Authorization header, full `list_products` payload, or unrelated user data.
 - Set `expires_at` to about 2 hours after creation.
+- Write the file immediately after product selection, even if prompt/settings are still unknown.
+- Update prompt/settings in the file later if the ad creative changes before generation.
 - Always read this file immediately before calling `create_video_ad`.
 - Use the `product_id` from this file, not from conversation memory.
 - Include the selected product name and `product_id` in the confirmation message when useful for accuracy.
