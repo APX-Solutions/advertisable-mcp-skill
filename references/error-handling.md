@@ -67,8 +67,9 @@ Actions:
 2. If present, read `brand_id`, `brand_name`, `product_id`, and `product_name` from that file before calling `create_video_ad`.
 3. If the file is past `expires_at`, delete it and recreate the selection by calling `list_products` again.
 4. If missing, call `list_products` again and recreate the compact selection file after choosing the product.
-5. Delete the selection file after `create_video_ad` returns a `job_id`, or when the user cancels or changes the selected brand/product.
-6. Never store the API key or full product payload in the selection file.
+5. Do not call `create_video_ad` from memory when the selection file is missing, expired, or ambiguous. Plain rule: never create a video ad from remembered product IDs.
+6. Delete the selection file after `create_video_ad` returns a `job_id`, or when the user cancels or changes the selected brand/product.
+7. Never store the API key or full product payload in the selection file.
 
 ## Generation Jobs
 

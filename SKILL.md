@@ -48,6 +48,20 @@ The Advertisable MCP server is remote:
 
 The skill installs the connection. The MCP server provides the live tools. The reference docs teach the agent how to use the live tools safely and effectively.
 
+## Critical Product Memory Protocol
+
+When using `list_products`, do not rely on conversation memory for the selected product ID.
+
+After selecting a product from `list_products`, immediately:
+
+1. Save a compact temp selection file with `brand_id`, `brand_name`, `product_id`, `product_name`, and `expires_at`.
+2. Tell the user which product was selected in plain language.
+3. Before calling `create_video_ad`, read the temp selection file back.
+4. Use the `product_id` from the temp selection file, not from memory.
+5. Delete the temp selection file after `create_video_ad` returns a `job_id`, or if the user cancels or changes product.
+
+Do not call `create_video_ad` from memory after a `list_products` response. Plain rule: never create a video ad from remembered product IDs. If no temp selection file exists, call `list_products` again and repeat the selection protocol.
+
 ## Install Workflow
 
 1. Identify the user's agent client or gateway. If unknown, ask once.

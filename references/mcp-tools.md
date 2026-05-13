@@ -156,9 +156,12 @@ Recommended preflight:
 
 1. `list_brands` to resolve `brand_id`.
 2. `list_products` to resolve `product_id`.
-3. Write a session-scoped temp selection file with the compact selected brand/product context if filesystem access is available.
+3. Immediately write a session-scoped temp selection file with the compact selected brand/product context.
 4. Ask one concise clarification if brand/product is ambiguous.
 5. Confirm the final generation parameters.
+6. Immediately before calling `create_video_ad`, read the temp selection file back and use the `product_id` from the file.
+
+Do not call `create_video_ad` from memory after selecting a product from `list_products`. Plain rule: never create a video ad from remembered product IDs. If the temp selection file is missing or expired, call `list_products` again and recreate it.
 
 Input schema:
 

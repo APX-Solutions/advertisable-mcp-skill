@@ -26,12 +26,13 @@ Flow:
 6. If products exist but the product is unclear, show a digestible product list and ask the user to choose.
 7. If the brand has no products, tell the user and offer to continue without product context.
 8. Build a concise prompt from the user's creative direction and product details.
-9. Write the selected brand/product context to a temporary selection file if filesystem access is available.
+9. Write the selected brand/product context to a temporary selection file. Do this immediately after product selection.
 10. Confirm brand, product or no-product choice, aspect ratio, storyboard count, and prompt before calling `create_video_ad`.
-11. Call `create_video_ad`.
-12. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
-13. Tell the user generation usually takes 2-4 minutes.
-14. Use `get_ad_status` to check progress when useful.
+11. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
+12. Call `create_video_ad`.
+13. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
+14. Tell the user generation usually takes 2-4 minutes.
+15. Use `get_ad_status` to check progress when useful.
 
 Default choices when the user does not specify:
 
@@ -87,6 +88,8 @@ Rules:
 
 Use this workaround when `list_products` returns a large payload. After selecting the correct product, immediately write a compact working note so the selected `product_id` survives follow-up messages and does not get buried in context.
 
+This is a required protocol whenever a product is selected from `list_products`. Do not call `create_video_ad` from memory after product selection. Plain rule: never create a video ad from remembered product IDs. If the temp selection file is missing, expired, or ambiguous, call `list_products` again and recreate it before generating the ad.
+
 Prefer a temp-directory file, not a workspace file, so it does not linger in the user's project.
 
 Windows pattern:
@@ -125,7 +128,8 @@ Rules:
 
 - Do not write the API key, Authorization header, full `list_products` payload, or unrelated user data.
 - Set `expires_at` to about 2 hours after creation.
-- Read this file before calling `create_video_ad` if the conversation has moved on after product selection.
+- Always read this file immediately before calling `create_video_ad`.
+- Use the `product_id` from this file, not from conversation memory.
 - Include the selected product name and `product_id` in the confirmation message when useful for accuracy.
 - Delete the file after `create_video_ad` returns a `job_id`.
 - Delete the file if the user cancels, changes brand, changes product, abandons the ad creation flow, or the file is past `expires_at`.
@@ -185,6 +189,7 @@ I'll generate a new variation from job <job_id>, keeping the same character and 
 - Do not invent `brand_id`, `product_id`, or `job_id`.
 - Do not guess among multiple plausible brands or products.
 - Preserve selected brand/product IDs in a session-scoped temp file when a large product list makes context loss likely.
+- Do not call `create_video_ad` from memory after selecting a product; read the temp selection file first.
 - Delete the temp selection file after submitting the ad, when the user cancels, or when it expires.
 - Do not promise immediate completion; generation usually takes 2-4 minutes.
 - Do not include the API key in tool arguments.
