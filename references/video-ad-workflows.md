@@ -87,18 +87,27 @@ Rules:
 
 Use this workaround when `list_products` returns a large payload. After selecting the correct product, immediately write a compact working note so the selected `product_id` survives follow-up messages and does not get buried in context.
 
-Preferred filename in the current workspace:
+Prefer a temp-directory file, not a workspace file, so it does not linger in the user's project.
+
+Windows pattern:
 
 ```text
-.advertisable-selection.json
+%TEMP%\advertisable-selection-<session-or-process-id>.json
 ```
 
-If the current workspace is not writable, use the agent's temporary directory. If filesystem access is unavailable, keep the same JSON object as a short visible working note in the conversation before asking for confirmation.
+macOS/Linux pattern:
+
+```text
+/tmp/advertisable-selection-<session-or-process-id>.json
+```
+
+If the agent has a known session/thread ID, use it in the filename. Otherwise use the current process ID or another short unique suffix. If filesystem access is unavailable, keep the same JSON object as a short visible working note in the conversation before asking for confirmation.
 
 Write only compact, non-secret context:
 
 ```json
 {
+  "alias": "current_product",
   "brand_id": "<brand uuid>",
   "brand_name": "<brand name>",
   "product_id": "<product uuid or null>",
@@ -106,17 +115,20 @@ Write only compact, non-secret context:
   "product_page_url": "<url or null>",
   "prompt": "<draft prompt>",
   "aspect_ratio": "9:16",
-  "num_storyboards": 1
+  "num_storyboards": 1,
+  "created_at": "2026-05-13T10:00:00Z",
+  "expires_at": "2026-05-13T12:00:00Z"
 }
 ```
 
 Rules:
 
 - Do not write the API key, Authorization header, full `list_products` payload, or unrelated user data.
+- Set `expires_at` to about 2 hours after creation.
 - Read this file before calling `create_video_ad` if the conversation has moved on after product selection.
 - Include the selected product name and `product_id` in the confirmation message when useful for accuracy.
 - Delete the file after `create_video_ad` returns a `job_id`.
-- Delete the file if the user cancels, changes brand, changes product, or abandons the ad creation flow.
+- Delete the file if the user cancels, changes brand, changes product, abandons the ad creation flow, or the file is past `expires_at`.
 
 ## Recent Ads
 
@@ -172,8 +184,8 @@ I'll generate a new variation from job <job_id>, keeping the same character and 
 - Confirm before calling `create_video_ad` or `regenerate_variation`.
 - Do not invent `brand_id`, `product_id`, or `job_id`.
 - Do not guess among multiple plausible brands or products.
-- Preserve selected brand/product IDs in `.advertisable-selection.json` when a large product list makes context loss likely.
-- Delete `.advertisable-selection.json` after submitting the ad or when the user cancels.
+- Preserve selected brand/product IDs in a session-scoped temp file when a large product list makes context loss likely.
+- Delete the temp selection file after submitting the ad, when the user cancels, or when it expires.
 - Do not promise immediate completion; generation usually takes 2-4 minutes.
 - Do not include the API key in tool arguments.
 - Keep user-facing summaries focused on brand, product, prompt, status, and IDs.

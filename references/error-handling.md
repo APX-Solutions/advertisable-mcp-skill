@@ -63,11 +63,12 @@ Likely causes:
 
 Actions:
 
-1. Check for `.advertisable-selection.json` in the current workspace or the agent's temporary directory.
+1. Check the agent's temp directory for the session-scoped Advertisable selection file, such as `%TEMP%\advertisable-selection-<session>.json` or `/tmp/advertisable-selection-<session>.json`.
 2. If present, read `brand_id`, `brand_name`, `product_id`, and `product_name` from that file before calling `create_video_ad`.
-3. If missing, call `list_products` again and recreate the compact selection file after choosing the product.
-4. Delete the selection file after `create_video_ad` returns a `job_id`, or when the user cancels or changes the selected brand/product.
-5. Never store the API key or full product payload in the selection file.
+3. If the file is past `expires_at`, delete it and recreate the selection by calling `list_products` again.
+4. If missing, call `list_products` again and recreate the compact selection file after choosing the product.
+5. Delete the selection file after `create_video_ad` returns a `job_id`, or when the user cancels or changes the selected brand/product.
+6. Never store the API key or full product payload in the selection file.
 
 ## Generation Jobs
 

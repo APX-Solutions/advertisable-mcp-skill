@@ -128,7 +128,7 @@ Output interpretation:
 - Show at most 5 products by default, using product names and short distinguishing details. Do not paste the full product payload into chat.
 - Hide `product_id` by default unless the user asks for technical details or the ID is needed to confirm a precise selection.
 - Use a `product_id` in `create_video_ad` whenever a matching product exists.
-- If the product payload is large, immediately copy only the selected brand/product fields into `.advertisable-selection.json` as described in `references/video-ad-workflows.md`.
+- If the product payload is large, immediately copy only the selected brand/product fields into a session-scoped temp selection file as described in `references/video-ad-workflows.md`.
 - Do not invent product IDs.
 
 ## create_video_ad
@@ -156,7 +156,7 @@ Recommended preflight:
 
 1. `list_brands` to resolve `brand_id`.
 2. `list_products` to resolve `product_id`.
-3. Write `.advertisable-selection.json` with the compact selected brand/product context if filesystem access is available.
+3. Write a session-scoped temp selection file with the compact selected brand/product context if filesystem access is available.
 4. Ask one concise clarification if brand/product is ambiguous.
 5. Confirm the final generation parameters.
 
@@ -218,7 +218,7 @@ Output interpretation:
 - Returns immediately with a `job_id`.
 - Generation usually takes 2-4 minutes.
 - Use `get_ad_status` to inspect progress and final outputs.
-- After a successful submission returns `job_id`, delete `.advertisable-selection.json` if it was created for this ad flow.
+- After a successful submission returns `job_id`, delete the temp selection file if it was created for this ad flow.
 
 ## get_ad_status
 
