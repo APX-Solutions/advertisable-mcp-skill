@@ -11,6 +11,7 @@ Use this reference after the Advertisable MCP tools are visible in the live tool
 - `get_ad_status`: poll or inspect a generation job.
 - `list_recent_ads`: find previous jobs for a brand.
 - `regenerate_variation`: create a new variation from an existing job.
+- `get_wallet_balance`: check available credits and wallet status.
 
 ## New Video Ad
 
@@ -27,12 +28,13 @@ Flow:
 7. If the brand has no products, tell the user and offer to continue without product context.
 8. Build a concise prompt from the user's creative direction and product details.
 9. Write the selected brand/product context to a temporary selection file. Do this immediately after product selection.
-10. Confirm brand, product or no-product choice, aspect ratio, storyboard count, and prompt before calling `create_video_ad`.
-11. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
-12. Call `create_video_ad`.
-13. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
-14. Tell the user generation usually takes 2-4 minutes.
-15. Use `get_ad_status` to check progress when useful.
+10. Call `get_wallet_balance` and confirm the wallet is active.
+11. Confirm brand, product or no-product choice, aspect ratio, storyboard count, prompt, estimated generation time, and available balance before calling `create_video_ad`.
+12. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
+13. Call `create_video_ad`.
+14. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
+15. Tell the user generation usually takes 2-4 minutes.
+16. Use `get_ad_status` to check progress when useful.
 
 Default choices when the user does not specify:
 
@@ -44,6 +46,12 @@ Confirmation template:
 
 ```text
 I found brand "<brand>" and product "<product>". I'll generate 1 vertical 9:16 video ad with this prompt: "<prompt>". This takes about 2-4 minutes and uses compute. Shall I start?
+```
+
+If `get_wallet_balance` was called, include the available balance:
+
+```text
+Your available balance is $<amount>. I found brand "<brand>" and product "<product>". I'll generate 1 vertical 9:16 video ad with this prompt: "<prompt>". This takes about 2-4 minutes and uses compute. Shall I start?
 ```
 
 ## Digestible Brand/Product Output
@@ -159,6 +167,19 @@ Flow:
 
 Do not create a second job just because the first one is still running.
 
+## Wallet Balance
+
+Use when the user asks about credits, balance, wallet, spend, or whether they can generate ads.
+
+Flow:
+
+1. Call `get_wallet_balance`.
+2. Tell the user the available balance in plain language using `available_usd`.
+3. Mention reserved funds only if it helps explain a shortfall.
+4. If wallet status is not `active`, do not start paid generation.
+
+Before calling `create_video_ad` or `regenerate_variation`, call `get_wallet_balance` when possible and include the available balance in the confirmation. This does not replace the user's confirmation; it helps them make an informed choice.
+
 ## Regenerate Variation
 
 Use when the user wants another version, variation, remix, or similar ad based on an existing generation.
@@ -168,9 +189,10 @@ Flow:
 1. Identify `source_job_id` from the user or from `list_recent_ads`.
 2. If the source job is unclear, show recent options and ask the user to choose.
 3. Ask whether to keep the original character and location unless the user already specified.
-4. Confirm before calling `regenerate_variation`.
-5. Call `regenerate_variation`.
-6. Use `get_ad_status` to check progress when useful.
+4. Call `get_wallet_balance` and confirm the wallet is active.
+5. Confirm before calling `regenerate_variation`.
+6. Call `regenerate_variation`.
+7. Use `get_ad_status` to check progress when useful.
 
 Defaults:
 
@@ -186,6 +208,7 @@ I'll generate a new variation from job <job_id>, keeping the same character and 
 ## Safety And Quality Rules
 
 - Confirm before calling `create_video_ad` or `regenerate_variation`.
+- Check `get_wallet_balance` before paid generation when possible, and do not start paid generation if wallet status is not active.
 - Do not invent `brand_id`, `product_id`, or `job_id`.
 - Do not guess among multiple plausible brands or products.
 - Preserve selected brand/product IDs in a session-scoped temp file when a large product list makes context loss likely.

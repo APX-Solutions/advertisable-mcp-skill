@@ -1,6 +1,6 @@
 # Advertisable MCP Tools
 
-Based on the current live MCP tool set, then edited with agent workflow guidance. Prefer the live MCP schema if it differs from this file.
+Based on the current live MCP tool set, then edited with mandatory agent workflow guidance. Prefer the live MCP schema if it differs from this file.
 
 The MCP client should supply this header automatically:
 
@@ -12,16 +12,16 @@ Never include the API key in MCP tool arguments unless a live tool schema explic
 
 ## Toolchain Summary
 
-Use this common sequence for new video ads:
+Use this common sequence for new paid video ads:
 
 ```text
-list_brands -> list_products -> confirm -> create_video_ad -> get_ad_status
+list_brands -> list_products -> get_wallet_balance -> write temp selection file -> confirm -> read temp selection file -> create_video_ad -> delete temp selection file -> get_ad_status
 ```
 
 Use this sequence for variations:
 
 ```text
-list_brands -> list_recent_ads -> confirm -> regenerate_variation -> get_ad_status
+list_brands -> list_recent_ads -> get_wallet_balance -> confirm -> regenerate_variation -> get_ad_status
 ```
 
 Read `references/video-ad-workflows.md` before creating or regenerating ads.
@@ -38,7 +38,7 @@ Use when:
 
 Do not use when:
 
-- The user is asking for actual brand, product, or ad work; use the domain tools directly unless connection health is uncertain.
+- The user is asking for actual brand, product, wallet, or ad work; use the domain tools directly unless connection health is uncertain.
 
 Input schema:
 
@@ -99,7 +99,7 @@ Use when:
 
 Do not use when:
 
-- The task is only to list recent ads or check status for a known job.
+- The task is only to list recent ads, check wallet balance, or check status for a known job.
 - The user explicitly wants generic brand creative without a product.
 
 Input schema:
@@ -131,6 +131,39 @@ Output interpretation:
 - If the product payload is large, immediately copy only the selected brand/product fields into a session-scoped temp selection file as described in `references/video-ad-workflows.md`.
 - Do not invent product IDs.
 
+## get_wallet_balance
+
+Purpose: Returns the authenticated user's current wallet balance.
+
+Use when:
+
+- The user asks about credits, wallet, balance, spend, or whether they can generate ads.
+- Before calling `create_video_ad` or `regenerate_variation`, because these operations use compute.
+- After an insufficient-credits or payment-related error.
+
+Do not use when:
+
+- The user only asks to list brands, list products, or inspect already-completed job details.
+
+Input schema:
+
+```json
+{
+  "properties": {},
+  "title": "get_wallet_balanceArguments",
+  "type": "object"
+}
+```
+
+Output interpretation:
+
+- `available_usd` is the spendable balance and is safe to quote directly.
+- `reserved_usd` is held by in-flight reservations.
+- `paid_usd` is total funded amount.
+- `status` may be `active`, `frozen`, or `closed`.
+- If status is not `active`, do not start paid generation; tell the user the wallet is not active.
+- Present balances in plain language, for example: `Available balance: $12.50`.
+
 ## create_video_ad
 
 Purpose: Generate an AI video advertisement from a text description.
@@ -143,13 +176,14 @@ Use when:
 Required confirmation:
 
 - Confirm before calling. This takes 2-4 minutes and costs compute.
-- Confirm brand, product or no-product choice, prompt, aspect ratio, and number of storyboards.
+- Confirm brand, product or no-product choice, prompt, aspect ratio, number of storyboards, and available wallet balance when known.
 
 Do not use when:
 
-- The user is only asking to check an existing job.
+- The user is only asking to check wallet balance or an existing job.
 - The brand is ambiguous.
 - The product is ambiguous and products are available.
+- The wallet status is not active.
 - The user has not consented after the compute-cost warning.
 
 Recommended preflight:
@@ -157,9 +191,10 @@ Recommended preflight:
 1. `list_brands` to resolve `brand_id`.
 2. `list_products` to resolve `product_id`.
 3. Immediately write a session-scoped temp selection file with the compact selected brand/product context.
-4. Ask one concise clarification if brand/product is ambiguous.
-5. Confirm the final generation parameters.
-6. Immediately before calling `create_video_ad`, read the temp selection file back and use the `product_id` from the file.
+4. Call `get_wallet_balance` to confirm the wallet is active and surface available balance.
+5. Ask one concise clarification if brand/product is ambiguous.
+6. Confirm the final generation parameters and compute use.
+7. Immediately before calling `create_video_ad`, read the temp selection file back and use the `product_id` from the file.
 
 Do not call `create_video_ad` from memory after selecting a product from `list_products`. Plain rule: never create a video ad from remembered product IDs. If the temp selection file is missing or expired, call `list_products` again and recreate it.
 
@@ -322,11 +357,12 @@ Use when:
 Required confirmation:
 
 - Confirm before calling. This takes 2-4 minutes and costs compute.
-- Confirm the source job and whether to keep character and location.
+- Confirm the source job, whether to keep character/location, and available wallet balance when known.
 
 Do not use when:
 
 - The source job is ambiguous.
+- The wallet status is not active.
 - The user has not consented after the compute-cost warning.
 - The user actually wants a new concept unrelated to an existing job; use `create_video_ad`.
 

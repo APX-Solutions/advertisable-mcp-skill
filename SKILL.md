@@ -1,6 +1,6 @@
 ---
 name: advertisable-mcp
-description: Install, configure, and use the Advertisable MCP tools for video ad creation and management. Trigger on ANY of the following: listing brands, listing products, creating a video ad, checking ad job status, regenerating ad variations, or any mention of Advertisable, video ads, ad generation, or ad jobs. Also trigger for install, configure, restart, verify, and troubleshoot flows involving the Advertisable MCP server, API key, or bearer token across any MCP-capable agent client.
+description: MUST READ BEFORE USING Advertisable MCP tools. Contains mandatory runtime protocols for video ad creation and management, including product selection memory, temp file handling, wallet/balance checks before paid generation, confirmation before compute, and digestible brand/product outputs. Trigger on ANY Advertisable MCP usage: listing brands, listing products, checking wallet balance or credits, creating a video ad, checking ad job status, regenerating ad variations, installing/configuring/verifying/troubleshooting the Advertisable MCP server, API key, or bearer token across any MCP-capable agent client.
 homepage: https://advertisable.ai
 repository: https://github.com/advertisable/advertisable-mcp-skill
 issues: https://github.com/advertisable/advertisable-mcp-skill/issues
@@ -30,7 +30,20 @@ metadata:
 
 # Advertisable MCP
 
+> **MANDATORY BEFORE TOOL USE**
+> Read this skill before using any Advertisable MCP tool, even if the tools are already visible in your tool list. This file contains required runtime protocols, not just installation instructions. In particular, the product selection memory protocol, wallet/balance checks, confirmation rules, digestible brand/product output rules, and cleanup rules are mandatory before creating or regenerating ads.
+
 Use this skill to install the Advertisable MCP connection into an agent's available tools, then guide the agent in using those tools well. The skill does not replace the MCP server; it teaches the agent how to mount it, reload the gateway, verify it, and read the bundled usage references.
+
+## TL;DR
+
+Never call `create_video_ad` from remembered product IDs.
+
+Required flow after `list_products`:
+
+```text
+select product -> write temp selection file -> confirm with user -> read temp file -> create_video_ad -> delete temp file
+```
 
 ## Core Model
 
@@ -48,7 +61,7 @@ The Advertisable MCP server is remote:
 
 The skill installs the connection. The MCP server provides the live tools. The reference docs teach the agent how to use the live tools safely and effectively.
 
-## Critical Product Memory Protocol
+## Mandatory Product Memory Protocol
 
 When using `list_products`, do not rely on conversation memory for the selected product ID.
 
@@ -127,6 +140,7 @@ create_video_ad
 get_ad_status
 list_recent_ads
 regenerate_variation
+get_wallet_balance
 ```
 
 Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. Present brand and product choices in compact, user-friendly lists rather than raw payloads. When a product is selected from a large `list_products` response, preserve the compact selection in a session-scoped temp file as described in `references/video-ad-workflows.md`, then delete that file after submission, cancellation, product change, or expiry.

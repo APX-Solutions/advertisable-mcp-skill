@@ -88,6 +88,23 @@ Actions:
 4. If a job failed, summarize the failure and offer to retry with adjusted prompt or settings.
 5. Before creating or regenerating, confirm compute use and generation time with the user.
 
+## Wallet And Credits
+
+Likely causes:
+
+- Wallet status is `frozen` or `closed`.
+- Available balance is too low.
+- Funds are reserved by in-flight jobs.
+- A generation tool reports insufficient credits.
+
+Actions:
+
+1. Call `get_wallet_balance`.
+2. Quote `available_usd` in plain language.
+3. If `reserved_usd` is nonzero, mention that some funds are reserved by in-flight work.
+4. If wallet status is not `active`, do not call `create_video_ad` or `regenerate_variation`.
+5. If credits are insufficient, tell the user the available balance and ask them to add funds or reduce the request before retrying.
+
 ## Transport Failures
 
 Likely causes:
