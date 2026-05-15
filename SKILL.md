@@ -155,6 +155,7 @@ create_video_ad
 get_ad_status
 list_recent_ads
 regenerate_variation
+recreate_video
 get_wallet_balance
 ```
 

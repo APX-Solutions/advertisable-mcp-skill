@@ -24,6 +24,12 @@ Use this sequence for variations:
 list_brands -> list_recent_ads -> get_wallet_balance -> confirm -> regenerate_variation -> get_ad_status
 ```
 
+Use this sequence to recreate an external reference video:
+
+```text
+list_brands -> optional list_products -> get_wallet_balance -> write temp selection file when product is selected -> confirm -> read temp selection file when used -> recreate_video -> delete temp selection file -> get_ad_status
+```
+
 Read `references/video-ad-workflows.md` before creating or regenerating ads.
 
 ## ping
@@ -259,6 +265,115 @@ Output interpretation:
 - Use `get_ad_status` to inspect progress and final outputs.
 - After a successful submission returns `job_id`, delete the temp selection file if it was created for this ad flow.
 
+## recreate_video
+
+Purpose: Recreate a reference video as a new ad, shot-for-shot.
+
+Use when:
+
+- The user shows or links a video they want to "make their own version of," "redo for their brand," "remake," "copy the style of," or "recreate."
+- The source is an external reference URL rather than an existing Advertisable job.
+- The user wants the reference video's shot composition, timing, and style analyzed and rebuilt for their selected brand or product.
+
+Do not use when:
+
+- The user wants another version of an existing Advertisable job; use `regenerate_variation`.
+- The source video URL is ambiguous, missing, or points to a generic page that merely embeds a video.
+- The brand is ambiguous.
+- The product is ambiguous and products are available.
+- The wallet status is not active.
+- The user has not consented after the compute-cost warning.
+
+Reference URL guidance:
+
+- Direct HTTPS links to video files, S3/CDN URLs, and supported social-platform URLs such as YouTube, TikTok, Instagram, X/Twitter, or Facebook can work.
+- Plain web pages or blog posts that embed a video may not work; ask for the direct video link or supported social URL.
+- Confirm the exact reference URL before calling the tool.
+
+Recommended preflight:
+
+1. `list_brands` to resolve `brand_id`.
+2. `list_products` to resolve `product_id` when the recreated ad should feature a specific product.
+3. Immediately write a session-scoped temp selection file if a product is selected, before asking follow-up creative questions.
+4. Confirm the reference URL and any optional creative direction.
+5. Call `get_wallet_balance` to confirm the wallet is active and surface available balance.
+6. Confirm the final recreation parameters and compute use.
+7. Immediately before calling `recreate_video`, read the temp selection file back if a product was selected and use the `product_id` from the file.
+
+Input schema:
+
+```json
+{
+  "properties": {
+    "brand_id": {
+      "title": "Brand Id",
+      "type": "string"
+    },
+    "reference_video_url": {
+      "title": "Reference Video Url",
+      "type": "string"
+    },
+    "prompt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Prompt"
+    },
+    "product_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Product Id"
+    },
+    "num_storyboards": {
+      "default": 1,
+      "title": "Num Storyboards",
+      "type": "integer"
+    },
+    "aspect_ratio": {
+      "default": "9:16",
+      "title": "Aspect Ratio",
+      "type": "string"
+    }
+  },
+  "required": [
+    "brand_id",
+    "reference_video_url"
+  ],
+  "title": "recreate_videoArguments",
+  "type": "object"
+}
+```
+
+Parameter guidance:
+
+- `brand_id`: required. Get from `list_brands`.
+- `reference_video_url`: required. Use the exact URL confirmed by the user.
+- `prompt`: optional. Use for extra creative direction layered on top of the analyzed reference video.
+- `product_id`: optional but strongly recommended when a matching product exists. Get from `list_products`.
+- `num_storyboards`: 1-5. Default to 1 unless the user asks for variants.
+- `aspect_ratio`: `"9:16"` default for social ads. Valid documented values: `"9:16"`, `"16:9"`, `"1:1"`.
+
+Output interpretation:
+
+- Returns immediately with a `job_id`.
+- Generation usually takes 2-4 minutes.
+- Use `get_ad_status` to inspect progress and final outputs.
+- In Claude.ai, the response may render as an auto-refreshing widget with storyboard tiles.
+- After a successful submission returns `job_id`, delete the temp selection file if it was created for this ad flow.
+
 ## get_ad_status
 
 Purpose: Get the current status of a video ad generation job.
@@ -294,6 +409,7 @@ Input schema:
 Output interpretation:
 
 - Report current status and progress briefly.
+- In Claude.ai, the response may render as an interactive status card with auto-refresh, storyboard tiles when complete, and a Recreate action.
 - When complete, summarize storyboard details and generated frame/video references available in the response.
 - If still running, do not resubmit. Tell the user generation usually takes 2-4 minutes.
 - If failed, summarize the failure and offer to adjust or retry.
