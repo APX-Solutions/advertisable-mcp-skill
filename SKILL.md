@@ -100,7 +100,20 @@ How would you like to connect Advertisable?
    - OpenClaw: `references/openclaw.md`
    - Hermes: `references/hermes.md`
    - NemoClaw: `references/nemoclaw.md`
-   - Other clients: `references/generic-mcp.md`
+   - Claude Code: `references/claude-code.md`
+   - Claude.ai, Claude Desktop remote connectors, Cowork, or mobile: `references/claude-connectors.md`
+   - Cursor or Cursor CLI: `references/cursor.md`
+   - Windsurf/Cascade: `references/windsurf.md`
+   - VS Code with GitHub Copilot Agent Mode: `references/vscode.md`
+   - Cline: `references/cline.md`
+   - Continue: `references/continue.md`
+   - Codex CLI or Codex IDE extension: `references/codex.md`
+   - Gemini CLI: `references/gemini-cli.md`
+   - OpenCode: `references/opencode.md`
+   - Kiro: `references/kiro.md`
+   - JetBrains AI Assistant or Junie: `references/jetbrains-junie.md`
+   - Zed: `references/zed.md`
+   - Other clients: start with `references/client-installation.md`, then use `references/generic-mcp.md`
 7. Configure the MCP server using the selected setup path.
 8. Tell the user to restart the gateway or begin a fresh agent session. This is required or commonly needed for gateway-style clients such as OpenClaw, Hermes, and NemoClaw.
 9. Verify the MCP entry when the client exposes a verification command.
@@ -163,9 +176,23 @@ Use the live MCP schema as the source of truth if it differs from bundled refere
 - `scripts/generate-tools-reference.js`: Queries MCP `tools/list` and renders Markdown docs.
 - `scripts/print-mcp-config.js`: Prints generic Advertisable MCP config snippets.
 - `references/auth.md`: Token handling, private setup, and agent-assisted setup.
+- `references/client-installation.md`: Client selection index for major MCP-capable agents.
 - `references/openclaw.md`: OpenClaw install, restart, and verification.
 - `references/hermes.md`: Hermes install guidance and restart expectations.
 - `references/nemoclaw.md`: NemoClaw install guidance and restart expectations.
+- `references/claude-code.md`: Claude Code install commands and scopes.
+- `references/claude-connectors.md`: Claude.ai/Claude Desktop remote connector guidance and limits.
+- `references/cursor.md`: Cursor and Cursor CLI MCP configuration.
+- `references/windsurf.md`: Windsurf/Cascade MCP configuration.
+- `references/vscode.md`: VS Code GitHub Copilot MCP configuration.
+- `references/cline.md`: Cline remote server setup.
+- `references/continue.md`: Continue MCP server setup.
+- `references/codex.md`: Codex CLI/IDE MCP configuration.
+- `references/gemini-cli.md`: Gemini CLI MCP configuration.
+- `references/opencode.md`: OpenCode MCP configuration.
+- `references/kiro.md`: Kiro MCP configuration.
+- `references/jetbrains-junie.md`: JetBrains AI Assistant and Junie MCP configuration.
+- `references/zed.md`: Zed MCP configuration.
 - `references/generic-mcp.md`: Generic `streamable-http` MCP config shape.
 - `references/mcp-tools.md`: How to use mounted Advertisable tools.
 - `references/video-ad-workflows.md`: End-to-end workflows for creating ads, checking jobs, and regenerating variations.

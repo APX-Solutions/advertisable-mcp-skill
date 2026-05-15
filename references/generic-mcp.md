@@ -1,6 +1,6 @@
 # Generic MCP Client Setup
 
-Use this reference for any MCP-capable agent client not covered by a dedicated adapter.
+Use this reference for any MCP-capable agent client not covered by a dedicated adapter. If the user named a common client, read `references/client-installation.md` first and follow the specific client reference when one exists.
 
 On first-time setup, ask the user to choose private browser setup, quick chat setup, or manual setup before asking for any key. Do not ask the user to paste a key into chat unless they choose quick chat setup.
 
@@ -53,4 +53,20 @@ Print registry-style metadata:
 
 ```bash
 node scripts/print-mcp-config.js --format registry
+```
+
+Print client-specific examples when supported:
+
+```bash
+node scripts/print-mcp-config.js --format claude-code
+node scripts/print-mcp-config.js --format cursor
+node scripts/print-mcp-config.js --format windsurf
+node scripts/print-mcp-config.js --format vscode
+node scripts/print-mcp-config.js --format continue
+node scripts/print-mcp-config.js --format codex
+node scripts/print-mcp-config.js --format gemini-cli
+node scripts/print-mcp-config.js --format opencode
+node scripts/print-mcp-config.js --format kiro
+node scripts/print-mcp-config.js --format jetbrains-junie
+node scripts/print-mcp-config.js --format zed
 ```
