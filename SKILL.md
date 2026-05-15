@@ -42,7 +42,7 @@ Never call `create_video_ad` from remembered product IDs.
 Required flow after `list_products`:
 
 ```text
-select product -> write temp selection file -> confirm with user -> read temp file -> create_video_ad -> delete temp file
+select product -> write temp selection file -> confirm with user -> read temp file -> create_video_ad -> write returned job_id to temp file
 ```
 
 ## Core Model
@@ -73,9 +73,11 @@ After selecting a product from `list_products`, immediately:
 4. Update prompt/settings in the temp file later if the ad creative changes before generation.
 5. Before calling `create_video_ad`, read the temp selection file back.
 6. Use the `product_id` from the temp selection file, not from memory.
-7. Delete the temp selection file after `create_video_ad` returns a `job_id`, or if the user cancels or changes product.
+7. After `create_video_ad`, `recreate_video`, or `regenerate_variation` returns a `job_id`, update the same temp file with that latest job id and job metadata.
 
 Do not call `create_video_ad` from memory after a `list_products` response. Plain rule: never create a video ad from remembered product IDs. If no temp selection file exists, call `list_products` again and repeat the selection protocol.
+
+Do not delete the temp file after successful generation. Leave it in the OS temp directory so follow-up requests can recover the selected product and latest job id without relying on chat memory. If the user changes brand/product, create or overwrite the temp file with the new selection instead of carrying old IDs forward.
 
 ## Install Workflow
 
@@ -186,7 +188,7 @@ recreate_video
 get_wallet_balance
 ```
 
-Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. Present brand and product choices in compact, user-friendly lists rather than raw payloads. When a product is selected from a large `list_products` response, preserve the compact selection in a session-scoped temp file as described in `references/video-ad-workflows.md`, then delete that file after submission, cancellation, product change, or expiry.
+Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. Present brand and product choices in compact, user-friendly lists rather than raw payloads. When a product is selected from a large `list_products` response, preserve the compact selection in a session-scoped temp file as described in `references/video-ad-workflows.md`, then update that file with returned job IDs after generation so follow-up commands can recover them.
 
 If the user asks to maintain or publish this skill, refresh the tool reference from the live server:
 

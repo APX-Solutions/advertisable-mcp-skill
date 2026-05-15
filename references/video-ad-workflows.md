@@ -11,6 +11,7 @@ Use this reference after the Advertisable MCP tools are visible in the live tool
 - `get_ad_status`: poll or inspect a generation job.
 - `list_recent_ads`: find previous jobs for a brand.
 - `regenerate_variation`: create a new variation from an existing job.
+- `recreate_video`: recreate an external reference video as a new ad.
 - `get_wallet_balance`: check available credits and wallet status.
 
 ## New Video Ad
@@ -33,7 +34,7 @@ Flow:
 12. Confirm brand, product or no-product choice, aspect ratio, storyboard count, prompt, estimated generation time, and available balance before calling `create_video_ad`.
 13. Before calling `create_video_ad`, read the temporary selection file back and use the `product_id` from the file.
 14. Call `create_video_ad`.
-15. Delete the temporary selection file after `create_video_ad` returns a `job_id`, or when the user cancels.
+15. After `create_video_ad` returns a `job_id`, update the temporary selection file with that job id and do not delete the file.
 16. Tell the user generation usually takes 2-4 minutes.
 17. Use `get_ad_status` to check progress when useful.
 
@@ -101,7 +102,7 @@ This is a required protocol whenever a product is selected from `list_products`.
 
 Write the file immediately after product selection, before asking additional creative questions about the ad. It is fine for prompt/settings fields to be `null` at first; update them later after the user answers follow-up questions.
 
-Prefer a temp-directory file, not a workspace file, so it does not linger in the user's project.
+Prefer a temp-directory file, not a workspace file, so it does not linger in the user's project. This is still only a local `/tmp` or `%TEMP%` working file, not agent memory and not a project artifact.
 
 Windows pattern:
 
@@ -130,6 +131,10 @@ Write only compact, non-secret context:
   "prompt": null,
   "aspect_ratio": null,
   "num_storyboards": null,
+  "latest_job_id": null,
+  "latest_job_type": null,
+  "latest_job_created_at": null,
+  "source_job_id": null,
   "created_at": "2026-05-13T10:00:00Z",
   "expires_at": "2026-05-13T12:00:00Z"
 }
@@ -141,11 +146,13 @@ Rules:
 - Set `expires_at` to about 2 hours after creation.
 - Write the file immediately after product selection, even if prompt/settings are still unknown.
 - Update prompt/settings in the file later if the ad creative changes before generation.
-- Always read this file immediately before calling `create_video_ad`.
+- Always read this file immediately before calling `create_video_ad` or `recreate_video` when a product is selected.
 - Use the `product_id` from this file, not from conversation memory.
 - Include the selected product name and `product_id` in the confirmation message when useful for accuracy.
-- Delete the file after `create_video_ad` returns a `job_id`.
-- Delete the file if the user cancels, changes brand, changes product, abandons the ad creation flow, or the file is past `expires_at`.
+- After `create_video_ad`, `recreate_video`, or `regenerate_variation` returns a `job_id`, update this same file with `latest_job_id`, `latest_job_type`, and `latest_job_created_at`. For variations, also record `source_job_id`.
+- Do not delete the temp file after successful generation. Leave it in the OS temp directory so follow-up commands can recover the selected product and latest job id without relying on chat memory.
+- If the user changes brand or product, overwrite or create a new temp file with the new selection before generating.
+- If the file is past `expires_at`, do not trust stale brand/product choices for a new generation; call `list_brands`/`list_products` again and overwrite the file. The file may remain in `/tmp` or `%TEMP%`.
 
 ## Recent Ads
 
@@ -197,7 +204,24 @@ Flow:
 4. Call `get_wallet_balance` and confirm the wallet is active.
 5. Confirm before calling `regenerate_variation`.
 6. Call `regenerate_variation`.
-7. Use `get_ad_status` to check progress when useful.
+7. If a temp selection file exists, update it with the returned `job_id` as `latest_job_id`, set `latest_job_type` to `regenerate_variation`, and record `source_job_id`.
+8. Use `get_ad_status` to check progress when useful.
+
+## Recreate Video
+
+Use when the user wants to recreate an external reference video for their brand or product.
+
+Flow:
+
+1. Call `list_brands`.
+2. Resolve the brand.
+3. Call `list_products` when a product should be featured.
+4. If a product is selected, write or update the temporary selection file before asking follow-up creative questions.
+5. Confirm the reference video URL, prompt or extra creative direction, product choice, aspect ratio, storyboard count, estimated generation time, and available balance.
+6. Before calling `recreate_video`, read the temporary selection file back if a product was selected and use the `product_id` from the file.
+7. Call `recreate_video`.
+8. After `recreate_video` returns a `job_id`, update the temporary selection file with `latest_job_id`, `latest_job_type`, and `latest_job_created_at`. Do not delete the temp file after successful generation.
+9. Use `get_ad_status` to check progress when useful.
 
 Defaults:
 
@@ -218,7 +242,8 @@ I'll generate a new variation from job <job_id>, keeping the same character and 
 - Do not guess among multiple plausible brands or products.
 - Preserve selected brand/product IDs in a session-scoped temp file when a large product list makes context loss likely.
 - Do not call `create_video_ad` from memory after selecting a product; read the temp selection file first.
-- Delete the temp selection file after submitting the ad, when the user cancels, or when it expires.
+- Do not delete the temp selection file after successful generation; update it with the returned job id.
+- Do not use expired temp-file selections for new generation. Refresh from live tools and overwrite the temp file.
 - Do not promise immediate completion; generation usually takes 2-4 minutes.
 - Do not include the API key in tool arguments.
 - Keep user-facing summaries focused on brand, product, prompt, status, and IDs.

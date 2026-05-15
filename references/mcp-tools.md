@@ -15,7 +15,7 @@ Never include the API key in MCP tool arguments unless a live tool schema explic
 Use this common sequence for new paid video ads:
 
 ```text
-list_brands -> list_products -> get_wallet_balance -> write temp selection file -> confirm -> read temp selection file -> create_video_ad -> delete temp selection file -> get_ad_status
+list_brands -> list_products -> get_wallet_balance -> write temp selection file -> confirm -> read temp selection file -> create_video_ad -> write job_id to temp selection file -> get_ad_status
 ```
 
 Use this sequence for variations:
@@ -27,7 +27,7 @@ list_brands -> list_recent_ads -> get_wallet_balance -> confirm -> regenerate_va
 Use this sequence to recreate an external reference video:
 
 ```text
-list_brands -> optional list_products -> get_wallet_balance -> write temp selection file when product is selected -> confirm -> read temp selection file when used -> recreate_video -> delete temp selection file -> get_ad_status
+list_brands -> optional list_products -> get_wallet_balance -> write temp selection file when product is selected -> confirm -> read temp selection file when used -> recreate_video -> write job_id to temp selection file -> get_ad_status
 ```
 
 Read `references/video-ad-workflows.md` before creating or regenerating ads.
@@ -263,7 +263,7 @@ Output interpretation:
 - Returns immediately with a `job_id`.
 - Generation usually takes 2-4 minutes.
 - Use `get_ad_status` to inspect progress and final outputs.
-- After a successful submission returns `job_id`, delete the temp selection file if it was created for this ad flow.
+- After a successful submission returns `job_id`, update the temp selection file with `latest_job_id`, `latest_job_type`, and `latest_job_created_at`. Do not delete the temp file after successful generation.
 
 ## recreate_video
 
@@ -372,7 +372,7 @@ Output interpretation:
 - Generation usually takes 2-4 minutes.
 - Use `get_ad_status` to inspect progress and final outputs.
 - In Claude.ai, the response may render as an auto-refreshing widget with storyboard tiles.
-- After a successful submission returns `job_id`, delete the temp selection file if it was created for this ad flow.
+- After a successful submission returns `job_id`, update the temp selection file with `latest_job_id`, `latest_job_type`, and `latest_job_created_at`. Do not delete the temp file after successful generation.
 
 ## get_ad_status
 
@@ -522,3 +522,4 @@ Output interpretation:
 - Returns immediately with a new `job_id`.
 - Generation usually takes 2-4 minutes.
 - Use `get_ad_status` to inspect progress and final outputs.
+- If a temp selection file exists, update it with the new `latest_job_id`, `latest_job_type`, and `latest_job_created_at`. Do not delete the temp file after successful generation.
