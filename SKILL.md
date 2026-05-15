@@ -119,6 +119,20 @@ How would you like to connect Advertisable?
 9. Verify the MCP entry when the client exposes a verification command.
 10. If tools are missing after setup, read `references/error-handling.md` before changing the token or config.
 
+## Update Workflow
+
+If the user already installed this skill from a git repository and asks to update, refresh, pull latest, or reinstall the latest version, update the skill checkout with git instead of reinstalling from scratch.
+
+1. Locate the installed `advertisable-mcp` skill directory. It should contain this `SKILL.md` and a `.git` directory.
+2. Run:
+
+```bash
+git pull
+```
+
+3. If the agent client caches skill contents, restart the agent session or reload skills after the pull.
+4. If `git pull` fails because the directory is not a git repository, reinstall from the public skill repo link instead of editing files manually.
+
 ## OpenClaw Quick Path
 
 Prefer the bundled installer when Node.js is available:
