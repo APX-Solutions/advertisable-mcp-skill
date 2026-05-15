@@ -6,7 +6,11 @@ On first-time setup, ask the user to choose private browser setup, quick chat se
 
 ## Private Guided Install
 
-For non-technical users, prefer the local browser setup. The agent should run:
+For non-technical users, prefer the local browser setup.
+
+Critical rule: this is a live localhost server. The agent must start the script in a long-running/background session and keep it alive until the user submits the key and the browser shows the success page. Do not run it as a one-shot command just to capture `SETUP_URL`; if the process exits, the browser page will go offline and the user cannot submit the key.
+
+The agent should run:
 
 ```bash
 node scripts/connect-local-ui.js --client openclaw
@@ -24,7 +28,9 @@ Send that URL to the user and say:
 Open this link, paste your Advertisable connection key, and click Connect. When the page says setup is done, come back and tell me.
 ```
 
-The browser page installs the OpenClaw MCP config after the user submits the key. It then tells the user they can close the tab and tell the agent setup is done.
+While the user is entering the key, keep the script process running. The browser page installs the OpenClaw MCP config after the user submits the key. It then tells the user they can close the tab and tell the agent setup is done. The agent may stop watching the process only after the success page appears, the script exits by itself, or the user cancels.
+
+If the user sees a browser "page offline", "connection refused", or similar localhost error before submitting the key, the setup script was probably stopped too early. Restart it in a persistent session and give the user the new `SETUP_URL`.
 
 Technical fallback:
 

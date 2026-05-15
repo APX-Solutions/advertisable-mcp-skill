@@ -259,6 +259,7 @@ async function main() {
     const url = `http://${HOST}:${address.port}/`;
     console.log(`SETUP_URL ${url}`);
     console.log("Send this link to the user. Do not ask them to paste the key into chat.");
+    console.log("Keep this process running until the user submits the key and the success page appears.");
   });
 }
 

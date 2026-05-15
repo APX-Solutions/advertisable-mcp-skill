@@ -28,7 +28,9 @@ Respect the user's choice.
 
 Use when the user does not want the agent to see the API key.
 
-For non-technical users, prefer a local browser setup when the client adapter supports it. The agent runs the setup script, sends the user the printed localhost URL, and the user enters the key in their own browser instead of chat.
+For non-technical users, prefer a local browser setup when the client adapter supports it. The agent runs the setup script, keeps that process alive, sends the user the printed localhost URL, and the user enters the key in their own browser instead of chat.
+
+Critical process rule: the localhost page only works while the setup script is still running. The agent must run the script in a persistent/background session and keep it alive until the user submits the key and sees the success page. Do not run it as a short command just to copy the URL; that will make the browser page go offline.
 
 OpenClaw browser setup:
 
@@ -41,6 +43,8 @@ Tell the user:
 ```text
 Open this link, paste your Advertisable connection key, and click Connect. When the page says setup is done, come back and tell me.
 ```
+
+While waiting for the user, keep the script process running. Stop it only after the success page appears, the script exits by itself, or the user cancels. If the user reports a browser "page offline" or "connection refused" error, restart the setup script in a persistent session and send the new `SETUP_URL`.
 
 Fallback paths:
 

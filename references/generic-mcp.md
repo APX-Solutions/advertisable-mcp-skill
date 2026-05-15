@@ -33,7 +33,7 @@ For non-technical users, prefer a browser-based private setup if the client adap
 node scripts/connect-local-ui.js --client openclaw
 ```
 
-Give the user the printed localhost link and tell them to paste their Advertisable connection key there, not in chat.
+Run this as a persistent/background process and keep it alive while the user enters the key. Give the user the printed localhost link and tell them to paste their Advertisable connection key there, not in chat. Do not stop the process until the user sees the success page, the script exits by itself, or the user cancels.
 
 ## Config Snippets
 

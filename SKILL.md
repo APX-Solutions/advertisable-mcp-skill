@@ -119,6 +119,19 @@ How would you like to connect Advertisable?
 9. Verify the MCP entry when the client exposes a verification command.
 10. If tools are missing after setup, read `references/error-handling.md` before changing the token or config.
 
+## Private Browser Setup Is A Live Process
+
+When the user chooses private browser setup, the local setup script must stay running until the user finishes submitting the key.
+
+Mandatory rules:
+
+1. Start `node scripts/connect-local-ui.js --client openclaw` in a long-running/background terminal session, task, or process that the agent keeps alive.
+2. Do not run the setup script as a one-shot command that the agent tool kills after printing `SETUP_URL`.
+3. Do not close, cancel, interrupt, or let the command timeout while waiting for the user.
+4. Send the printed `SETUP_URL` to the user and explicitly wait for them to submit the key and report that setup is done.
+5. Keep the process alive until the browser shows the success page, the script exits on its own, or the user cancels.
+6. If the browser shows a "page offline", "connection refused", or similar localhost error before the user submits the key, assume the agent killed the setup script too early. Restart the script in a persistent session and give the user the new localhost URL.
+
 ## Update Workflow
 
 If the user already installed this skill from a git repository and asks to update, refresh, pull latest, or reinstall the latest version, update the skill checkout with git instead of reinstalling from scratch.
