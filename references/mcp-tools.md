@@ -239,6 +239,57 @@ Input schema:
       "default": "9:16",
       "title": "Aspect Ratio",
       "type": "string"
+    },
+    "custom_script": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Custom Script"
+    },
+    "custom_script_segments": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Custom Script Segments"
+    },
+    "segment_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Segment Count"
+    },
+    "broll_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Broll Count"
     }
   },
   "required": [
@@ -253,10 +304,14 @@ Input schema:
 Parameter guidance:
 
 - `brand_id`: required. Get from `list_brands`.
-- `prompt`: required. Write a clear creative brief from the user's words.
+- `prompt`: required. Write a clear creative brief and visual direction from the user's words. If the user provides exact ad copy, do not rely on this field alone; pass the exact wording through `custom_script` or `custom_script_segments`.
 - `product_id`: optional but strongly recommended. Get from `list_products` when a matching product exists.
 - `num_storyboards`: 1-5. Default to 1 unless the user asks for variants.
 - `aspect_ratio`: `"9:16"` default for social ads. Valid documented values: `"9:16"`, `"16:9"`, `"1:1"`.
+- `custom_script`: optional string. Exact voiceover or ad copy to use verbatim. Use when the user says "use this script", "exact script", "word for word", or provides copy that should not be rewritten.
+- `custom_script_segments`: optional array of strings. Exact pre-split voiceover segments, one per scene or A-roll segment. Prefer this over `custom_script` when the user provides multiple lines, scenes, or already-separated script beats.
+- `segment_count`: optional integer. Overrides how `custom_script` is split into A-roll script segments. Ignored when `custom_script_segments` is provided.
+- `broll_count`: optional integer. Overrides the number of B-roll visual segments. Use only when the user explicitly asks for a certain number of B-roll segments or the creative structure requires it.
 
 Output interpretation:
 
