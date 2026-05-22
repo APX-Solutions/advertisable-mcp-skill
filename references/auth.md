@@ -8,9 +8,17 @@ Authorization: Bearer <token>
 
 The MCP client or gateway should attach this header. Do not pass the API key as an MCP tool argument unless a live tool schema explicitly requires it.
 
+## OAuth-First Website Bootstrap
+
+Users may arrive after sending their agent a website-provided bootstrap prompt that tells the agent to connect the Advertisable MCP server at `https://api-adbot.advertisable.ai/mcp/` via OAuth device flow, send them an authorization link, poll until authorization succeeds, and only then install this skill from GitHub.
+
+When that happened, this skill's bearer-token setup is not the primary path anymore. Do not ask for an API key, do not create a duplicate `advertisable` MCP entry, and do not overwrite the OAuth-backed connection. Verify the Advertisable tools are visible, then use this skill only for tool workflow guidance.
+
+Use the API-key and bearer-token setup paths below only when the user installed the skill directly from the GitHub repo without first connecting the MCP through OAuth, or when OAuth setup failed or is unsupported by the client.
+
 ## Setup Choices
 
-On first-time setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking the user to paste the key into chat.
+On first-time bearer-token setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking the user to paste the key into chat.
 
 Use this wording:
 

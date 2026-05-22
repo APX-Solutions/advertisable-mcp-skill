@@ -2,7 +2,9 @@
 
 Use this reference after `references/auth.md` when the user names an agent client or says they want the skill to install Advertisable in their current agent.
 
-Always ask for the setup path first: private browser setup, quick chat setup, or manual setup. Do not ask for a key in chat until the user chooses quick chat setup.
+If the user arrived from the website bootstrap prompt, the agent should have already connected the Advertisable MCP server via OAuth device flow before installing this skill. In that case, do not add a second bearer-token MCP entry from this skill. Verify the Advertisable tools are visible, then continue with tool usage guidance.
+
+Only use the bearer-token setup references when the Advertisable tools are not visible and the OAuth bootstrap was not performed, failed, or is unsupported by the target client. In that fallback case, always ask for the setup path first: private browser setup, quick chat setup, or manual setup. Do not ask for a key in chat until the user chooses quick chat setup.
 
 ## Pick The Client Reference
 

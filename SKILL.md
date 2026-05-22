@@ -1,6 +1,6 @@
 ---
 name: advertisable-mcp
-description: MUST READ BEFORE USING Advertisable MCP tools. Contains mandatory runtime protocols for video ad creation and management, including product selection memory, temp file handling, wallet/balance checks before paid generation, confirmation before compute, and digestible brand/product outputs. Trigger on ANY Advertisable MCP usage: listing brands, listing products, checking wallet balance or credits, creating a video ad, checking ad job status, regenerating ad variations, installing/configuring/verifying/troubleshooting the Advertisable MCP server, API key, or bearer token across any MCP-capable agent client.
+description: MUST READ BEFORE USING Advertisable MCP tools. Contains mandatory runtime protocols for video ad creation and management, including product selection memory, temp file handling, wallet/balance checks before paid generation, confirmation before compute, digestible brand/product outputs, and OAuth-first install handoff handling. Trigger on ANY Advertisable MCP usage: listing brands, listing products, checking wallet balance or credits, creating a video ad, checking ad job status, regenerating ad variations, installing/configuring/verifying/troubleshooting the Advertisable MCP server, API key, bearer token, or OAuth device flow across any MCP-capable agent client.
 homepage: https://advertisable.ai
 repository: https://github.com/advertisable/advertisable-mcp-skill
 issues: https://github.com/advertisable/advertisable-mcp-skill/issues
@@ -81,8 +81,9 @@ Do not delete the temp file after successful generation. Leave it in the OS temp
 
 ## Install Workflow
 
+0. If this skill was installed after an initial website prompt that already told the agent to connect the Advertisable MCP server via OAuth device flow, treat MCP installation as already handled. Do not ask for an API key, do not run the bearer-token installer, and do not create a duplicate MCP entry. Verify the Advertisable tools are visible, then move on to the usage guidance in this skill.
 1. Identify the user's agent client or gateway. If unknown, ask once.
-2. On first-time setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking for the key in chat.
+2. If the Advertisable tools are not visible and no OAuth bootstrap was performed, use the fallback setup choices below. On first-time bearer-token setup, always ask the user which setup path they want before requesting or accepting any Advertisable connection key. Do not default to asking for the key in chat.
 3. Offer exactly these setup modes in plain language:
    - **Private browser setup**: the agent starts a local setup page and sends the user a localhost link. The user enters their Advertisable connection key in the browser, not in chat.
    - **Quick chat setup**: the user pastes the Advertisable connection key into chat and the agent configures the connection.

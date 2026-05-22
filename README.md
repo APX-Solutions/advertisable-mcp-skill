@@ -69,9 +69,28 @@ The skill includes setup references for:
 
 See `references/client-installation.md` for the client selection index.
 
-## API Key Setup Paths
+## Recommended Website Install Prompt
 
-The skill instructs agents to ask the user which setup path they prefer before requesting a key:
+For end users, the recommended initial prompt is:
+
+```text
+Connect the Advertisable MCP at https://api-adbot.advertisable.ai/mcp/ — it supports OAuth device flow, with discovery at https://api-adbot.advertisable.ai/.well-known/oauth-protected-resource.
+
+Run the device flow and send me the authorization link like:
+
+Authorize here: https://app.advertisable.ai/device?code=XXXXXXXX
+
+Then poll the token endpoint until I authorize and confirm once it succeeds.
+Afterwards, if that succeeded, install this skill: https://github.com/APX-Solutions/advertisable-mcp-skill
+```
+
+When an agent follows that prompt, the MCP connection is established before the skill is installed. After loading the skill, the agent should not run the skill's bearer-token/API-key installer again. It should verify that the Advertisable tools are visible and then use the skill's tool workflow guidance.
+
+## API Key Fallback Setup Paths
+
+The API-key setup paths are fallbacks for users who install this skill directly from GitHub without first connecting the MCP through OAuth device flow, or for clients where OAuth setup is unsupported or failed.
+
+In those fallback cases, the skill instructs agents to ask the user which setup path they prefer before requesting a key:
 
 1. **Private browser setup**: the agent starts a localhost setup page, keeps the setup script running, and sends the user a local URL. The user enters the key in the browser, not in chat.
 2. **Quick chat setup**: the user pastes the key into chat and the agent configures the MCP connection.
