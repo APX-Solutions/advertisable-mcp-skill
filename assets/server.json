@@ -8,13 +8,13 @@
     "source": "other"
   },
   "version_detail": {
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "packages": [
     {
       "registry_type": "remote",
       "identifier": "advertisable",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": {
         "type": "streamable-http",
         "url": "https://api-adbot.advertisable.ai/mcp/",

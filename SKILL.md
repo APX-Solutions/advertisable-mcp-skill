@@ -175,21 +175,20 @@ Then restart the OpenClaw gateway or start a fresh session.
 
 Once the gateway has reloaded, the agent should see Advertisable MCP tools in its live tool list. Before using them, read `references/mcp-tools.md`.
 
-Advertisable currently exposes this video-ad toolchain:
+Advertisable exposes tools for every ad type, from a creator video to statics, carousels, animated and motion films, plus storyboard edits, final videos and share links:
 
-```text
-ping
-list_brands
-list_products
-create_video_ad
-get_ad_status
-list_recent_ads
-regenerate_variation
-recreate_video
-get_wallet_balance
-```
+- Account and brands: `ping`, `get_wallet_balance`, `list_brands`, `create_brand`, `start_brand_onboarding`, `get_brand_dna`
+- Products: `list_products`, `analyze_product`
+- UGC video ads: `create_video_ad`, `get_ad_status`, `create_video_ad_v2`, `get_ad_status_v2`, `create_multivideo_ads`, `create_ad_from_website`, `get_website_ad_status`, `regenerate_variation`, `recreate_video`
+- Other video ads: `create_freestyle_ad`, `get_freestyle_status`, `generate_freestyle_videos`, `create_animated_ad`, `create_broll_ad`, `create_motion_ad`, `edit_motion_film`, `create_duo_ad`, `approve_duo_gate`, `create_shorts_ad`, `get_shorts_status`, `revise_short`, `get_flow_status`
+- Avatars: `create_avatar`, `list_avatars`, `use_avatar`
+- Images: `create_static_ads`, `retry_static_ad`, `generate_carousel`, `get_carousel_status`, `regenerate_carousel_slide`, `generate_post_visual`, `get_post_visual_status`
+- Storyboard edits: `edit_frames`, `regenerate_frames`, `generate_segment_videos`, `list_client_comments`, `apply_client_comments`
+- Seeing, finishing and sharing: `show_ad`, `list_recent_ads`, `generate_full_video`, `get_full_video_status`, `finalize_video`, `get_reviewed_cut`, `create_video_share`
 
-Before creating or regenerating ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. Present brand and product choices in compact, user-friendly lists rather than raw payloads. When a product is selected from a large `list_products` response, preserve the compact selection in a session-scoped temp file as described in `references/video-ad-workflows.md`, then update that file with returned job IDs after generation so follow-up commands can recover them.
+Pick the ad type with the table in `references/video-ad-workflows.md`.
+
+Before creating, editing or rendering ads, also read `references/video-ad-workflows.md`. Confirm with the user before calling tools that spend compute or start generation. Present brand and product choices in compact, user-friendly lists rather than raw payloads. When a product is selected from a large `list_products` response, preserve the compact selection in a session-scoped temp file as described in `references/video-ad-workflows.md`, then update that file with returned job IDs after generation so follow-up commands can recover them.
 
 If the user asks to maintain or publish this skill, refresh the tool reference from the live server:
 

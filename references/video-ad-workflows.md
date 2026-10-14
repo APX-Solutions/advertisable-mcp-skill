@@ -4,15 +4,16 @@ Use this reference after the Advertisable MCP tools are visible in the live tool
 
 ## Core Tools
 
-- `ping`: confirm connection and authenticated user.
-- `list_brands`: find the user's available brands.
-- `list_products`: find products under a brand.
-- `create_video_ad`: submit a new AI video ad generation job.
-- `get_ad_status`: poll or inspect a generation job.
-- `list_recent_ads`: find previous jobs for a brand.
-- `regenerate_variation`: create a new variation from an existing job.
-- `recreate_video`: recreate an external reference video as a new ad.
-- `get_wallet_balance`: check available credits and wallet status.
+- Account and brands: `ping`, `get_wallet_balance`, `list_brands`, `create_brand`, `start_brand_onboarding`, `get_brand_dna`
+- Products: `list_products`, `analyze_product`
+- UGC video ads: `create_video_ad`, `get_ad_status`, `create_video_ad_v2`, `get_ad_status_v2`, `create_multivideo_ads`, `create_ad_from_website`, `get_website_ad_status`, `regenerate_variation`, `recreate_video`
+- Other video ads: `create_freestyle_ad`, `get_freestyle_status`, `generate_freestyle_videos`, `create_animated_ad`, `create_broll_ad`, `create_motion_ad`, `edit_motion_film`, `create_duo_ad`, `approve_duo_gate`, `create_shorts_ad`, `get_shorts_status`, `revise_short`, `get_flow_status`
+- Avatars: `create_avatar`, `list_avatars`, `use_avatar`
+- Images: `create_static_ads`, `retry_static_ad`, `generate_carousel`, `get_carousel_status`, `regenerate_carousel_slide`, `generate_post_visual`, `get_post_visual_status`
+- Storyboard edits: `edit_frames`, `regenerate_frames`, `generate_segment_videos`, `list_client_comments`, `apply_client_comments`
+- Seeing, finishing and sharing: `show_ad`, `list_recent_ads`, `generate_full_video`, `get_full_video_status`, `finalize_video`, `get_reviewed_cut`, `create_video_share`
+
+The full reference with every input is `references/mcp-tools.md`. The sections below cover the common flows.
 
 ## New Video Ad
 
@@ -190,7 +191,7 @@ Flow:
 3. Mention reserved funds only if it helps explain a shortfall.
 4. If wallet status is not `active`, do not start paid generation.
 
-Before calling `create_video_ad` or `regenerate_variation`, call `get_wallet_balance` when possible and include the available balance in the confirmation. This does not replace the user's confirmation; it helps them make an informed choice.
+Before calling any paid tool (every `create_*`, `generate_*`, `recreate_video`, `regenerate_*`, `edit_frames`), call `get_wallet_balance` when possible and include the available balance in the confirmation. This does not replace the user's confirmation; it helps them make an informed choice.
 
 ## Regenerate Variation
 
@@ -234,9 +235,56 @@ Confirmation template:
 I'll generate a new variation from job <job_id>, keeping the same character and location. This takes about 2-4 minutes and uses compute. Shall I start?
 ```
 
+## Choose The Ad Type
+
+| The user wants | Create with | Check progress with | Final video |
+|---|---|---|---|
+| A creator talking to camera (UGC) | `create_video_ad_v2` (or `create_video_ad`) | `get_ad_status_v2` / `get_ad_status` | `generate_full_video` |
+| Several UGC ads from one brief | `create_multivideo_ads` | `get_flow_status` (flow `multivideo`) | `generate_full_video` per storyboard |
+| An ad from nothing but a website | `create_ad_from_website` | `get_website_ad_status` | `generate_full_video` |
+| A free brief plus images ("the best ad for this product", cinematic) | `create_freestyle_ad` | `get_freestyle_status` | `generate_freestyle_videos`, then `finalize_video` |
+| Their version of a reference video | `recreate_video` (a direct https video file) | `get_ad_status` | `generate_full_video` |
+| Pixar / claymation / anime style | `create_animated_ad` | `get_flow_status` (flow `animated`) | `finalize_video` |
+| Product shots under a voiceover | `create_broll_ad` (20-40 min) | `get_flow_status` (flow `b-roll`) | recorded automatically |
+| Motion graphics, no actors | `create_motion_ad` | `get_flow_status` (flow `motion`) | `finalize_video` |
+| Two people talking | `create_duo_ad` | `get_flow_status` (flow `duo`) | recorded automatically |
+| One tight 15-second idea | `create_shorts_ad` | `get_shorts_status` | finishes itself |
+| Image ads | `create_static_ads` | `get_flow_status` (flow `statics`) | no video |
+| A carousel ad or a LinkedIn document | `generate_carousel` | `get_carousel_status` | no video |
+
+Ask one short question when the type is unclear. A recurring on-camera person: `create_avatar` or `list_avatars`, then `use_avatar` on a UGC job before its scripts are written.
+
+## Final Video And Sharing
+
+Use when the user says "make the video", "create the final video" or "I'm feeling lucky", or asks for a link.
+
+1. `show_ad` shows the storyboard (each scene's picture, clip and line), the dashboard link and the client preview link. Use it whenever the user asks to see an ad.
+2. Confirm, then call `generate_full_video`. Rendering clips is the paid step (billed per second of video); clips that are already rendered are not rendered again.
+3. Poll `get_full_video_status` until it returns `final_video_url`.
+4. `create_video_share` gives a no-login link. Send its `url`, never the raw file.
+
+## Change A Storyboard
+
+Use when the user wants something in a storyboard changed before or after the video.
+
+- Change one detail and keep everything else: `edit_frames`, one plain-words `change` per frame. Pass `include_product` when the change is about how the product looks.
+- Redraw a frame from scratch: `regenerate_frames`.
+- Re-render the clips of changed frames: `generate_segment_videos` for those frames only.
+- Static image: `retry_static_ad`. Carousel slide: `regenerate_carousel_slide`. Motion film: `edit_motion_film`. Short: `revise_short` is a full regeneration — say so first.
+
+## Client Comments On A Storyboard
+
+Use when the user's own client left notes on a shared storyboard.
+
+1. `list_client_comments` with the brand.
+2. `apply_client_comments` with the client's words passed through verbatim.
+3. `regenerate_frames` for the frames whose picture must change, then `generate_segment_videos` for those frames. In that order: rendering before redrawing films the picture the client complained about.
+4. For a note on a finished video, `get_reviewed_cut` finds the cut the client watched and the scene the note is about.
+
 ## Safety And Quality Rules
 
-- Confirm before calling `create_video_ad` or `regenerate_variation`.
+- Confirm before any tool that spends credits: every `create_*`, `generate_*`, `recreate_video`, `regenerate_*`, `edit_frames`, `apply_client_comments` and `revise_short`.
+- One request is one job: poll the running job's status tool instead of starting another.
 - Check `get_wallet_balance` before paid generation when possible, and do not start paid generation if wallet status is not active.
 - Do not invent `brand_id`, `product_id`, or `job_id`.
 - Do not guess among multiple plausible brands or products.
