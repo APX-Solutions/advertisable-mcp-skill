@@ -122,17 +122,16 @@ After setup, restart the OpenClaw gateway or start a fresh agent session so the 
 
 ## Tools Documented By The Skill
 
-The current tool reference covers:
+The current tool reference covers every customer tool, grouped:
 
-- `ping`
-- `list_brands`
-- `list_products`
-- `get_wallet_balance`
-- `create_video_ad`
-- `recreate_video`
-- `get_ad_status`
-- `list_recent_ads`
-- `regenerate_variation`
+- Account and brands: `ping`, `get_wallet_balance`, `list_brands`, `create_brand`, `start_brand_onboarding`, `get_brand_dna`
+- Products: `list_products`, `analyze_product`
+- UGC video ads: `create_video_ad`, `get_ad_status`, `create_video_ad_v2`, `get_ad_status_v2`, `create_multivideo_ads`, `create_ad_from_website`, `get_website_ad_status`, `regenerate_variation`, `recreate_video`
+- Other video ads: `create_freestyle_ad`, `get_freestyle_status`, `generate_freestyle_videos`, `create_animated_ad`, `create_broll_ad`, `create_motion_ad`, `edit_motion_film`, `create_duo_ad`, `approve_duo_gate`, `create_shorts_ad`, `get_shorts_status`, `revise_short`, `get_flow_status`
+- Avatars: `create_avatar`, `list_avatars`, `use_avatar`
+- Images: `create_static_ads`, `retry_static_ad`, `generate_carousel`, `get_carousel_status`, `regenerate_carousel_slide`, `generate_post_visual`, `get_post_visual_status`
+- Storyboard edits: `edit_frames`, `regenerate_frames`, `generate_segment_videos`, `list_client_comments`, `apply_client_comments`
+- Seeing, finishing and sharing: `show_ad`, `list_recent_ads`, `generate_full_video`, `get_full_video_status`, `finalize_video`, `get_reviewed_cut`, `create_video_share`
 
 See `references/mcp-tools.md` and `references/video-ad-workflows.md`.
 
